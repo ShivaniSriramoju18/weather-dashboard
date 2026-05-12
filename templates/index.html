@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      min-height: 100vh;
+      padding: 2rem;
+      color: #1a202c;
+    }
+    .container { max-width: 700px; margin: 0 auto; }
+    h1 { font-size: 1.8rem; font-weight: 600; margin-bottom: 1.5rem; color: #2d3748; }
+
+    .search-box { display: flex; gap: 10px; margin-bottom: 2rem; }
+    .search-box input {
+      flex: 1; padding: 12px 16px; border: 1px solid #cbd5e0;
+      border-radius: 10px; font-size: 1rem; background: white;
+      outline: none; transition: border-color 0.2s;
+    }
+    .search-box input:focus { border-color: #4299e1; }
+    .search-box button {
+      padding: 12px 24px; background: #4299e1; color: white;
+      border: none; border-radius: 10px; font-size: 1rem;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .search-box button:hover { background: #3182ce; }
+
+    .error { background: #fff5f5; border: 1px solid #fc8181; color: #c53030;
+      padding: 12px 16px; border-radius: 10px; margin-bottom: 1rem; }
+
+    .weather-card {
+      background: white; border-radius: 16px; padding: 1.5rem;
+      border: 1px solid #e2e8f0; margin-bottom: 1.5rem;
+    }
+    .city-name { font-size: 1.6rem; font-weight: 600; }
+    .description { color: #718096; font-size: 1rem; margin-top: 4px; text-transform: capitalize; }
+    .main-temp { font-size: 4rem; font-weight: 700; color: #2d3748; margin: 1rem 0; }
+    .main-temp span { font-size: 2rem; font-weight: 400; color: #718096; }
+
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 1rem; }
+    .stat { background: #f7fafc; border-radius: 10px; padding: 12px; text-align: center; }
+    .stat-label { font-size: 0.75rem; color: #a0aec0; text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat-value { font-size: 1.2rem; font-weight: 600; color: #2d3748; margin-top: 4px; }
+
+    .forecast-title { font-size: 1rem; font-weight: 600; color: #4a5568; margin-bottom: 1rem; }
+    .forecast-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    .forecast-day {
+      background: white; border-radius: 12px; padding: 12px 8px;
+      text-align: center; border: 1px solid #e2e8f0;
+    }
+    .forecast-date { font-size: 0.75rem; color: #718096; margin-bottom: 8px; }
+    .forecast-temp-max { font-size: 1rem; font-weight: 600; }
+    .forecast-temp-min { font-size: 0.85rem; color: #a0aec0; }
+    .weather-icon { width: 48px; height: 48px; }
+    .forecast-icon { width: 36px; height: 36px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Weather Dashboard</h1>
+
+    <form class="search-box" method="POST">
+      <input type="text" name="city" placeholder="Enter city name... e.g. Mumbai"
+             value="{{ city }}" autofocus>
+      <button type="submit">Search</button>
+    </form>
+
+    {% if error %}
+      <div class="error">{{ error | capitalize }}</div>
+    {% endif %}
+
+    {% if weather %}
+    <div class="weather-card">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <div>
+          <div class="city-name">{{ weather.city }}, {{ weather.country }}</div>
+          <div class="description">{{ weather.description }}</div>
+        </div>
+        <img class="weather-icon"
+             src="https://openweathermap.org/img/wn/{{ weather.icon }}@2x.png"
+             alt="{{ weather.description }}">
+      </div>
+      <div class="main-temp">{{ weather.temp }}<span>°C</span></div>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Feels Like</div>
+          <div class="stat-value">{{ weather.feels_like }}°C</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Humidity</div>
+          <div class="stat-value">{{ weather.humidity }}%</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Wind</div>
+          <div class="stat-value">{{ weather.wind_speed }} km/h</div>
+        </div>
+      </div>
+    </div>
+
+    {% if forecast %}
+    <div class="weather-card">
+      <div class="forecast-title">5-Day Forecast</div>
+      <div class="forecast-grid">
+        {% for day in forecast %}
+        <div class="forecast-day">
+          <div class="forecast-date">{{ day.date[5:] }}</div>
+          <img class="forecast-icon"
+               src="https://openweathermap.org/img/wn/{{ day.icon }}.png"
+               alt="{{ day.description }}">
+          <div class="forecast-temp-max">{{ day.temp_max }}°</div>
+          <div class="forecast-temp-min">{{ day.temp_min }}°</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    {% endif %}
+
+  </div>
+</body>
+</html>
